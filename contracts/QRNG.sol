@@ -30,6 +30,7 @@ contract QRNG is ERC721URIStorage, Ownable, RrpRequesterV0 {
 
   mapping(bytes32 => bool) expectingRequestIdToBeFulfilled;
   mapping(bytes32 => address) requestToRequester;
+  mapping(bytes32 => uint256) public requestIdToRandomNumber;
 
   // SVGコードを作成します。
   // 変更されるのは、表示される単語だけです。
@@ -98,17 +99,30 @@ contract QRNG is ERC721URIStorage, Ownable, RrpRequesterV0 {
       requestToRequester[requestId] = msg.sender;
       emit RequestedUint256(requestId);
       return requestId;
- }
+  }
 
-  function makeAnHaiQNFT(bytes32 requestId, bytes calldata data) public {
+  function fulfillUint256(bytes32 requestId, bytes calldata data)
+    external
+    onlyAirnodeRrp
+  {
     require(
-         expectingRequestIdToBeFulfilled[requestId],
-         "Request not awaiting fullfillment"
+        expectingRequestIdToBeFulfilled[requestId],
+        "Request ID not known"
     );
     expectingRequestIdToBeFulfilled[requestId] = false;
     uint256 randomNumber = abi.decode(data, (uint256));
+    requestIdToRandomNumber[requestId] = randomNumber; // Store the number to be used later on
     emit ReceivedUint256(requestId, randomNumber);
-    // 現在のtokenIdを取得します。tokenIdは0から始まります。
+  }
+
+  // You can call this function after the fulfillment with a large gas limit
+
+  function makeAnHaiQNFT(bytes32 requestId) external {
+
+    uint256 randomNumber = requestIdToRandomNumber[requestId];
+    require(randomNumber != 0, "No such request ID"); // It's safe to assume that the random number will never be 0
+    delete requestIdToRandomNumber[requestId]; // Delete the number to prevent it from being used again
+
     uint256 newItemId = _tokenIds.current();
 
 	  // 3つの単語を連携して格納する変数 combinedWord を定義します。
@@ -170,3 +184,4 @@ contract QRNG is ERC721URIStorage, Ownable, RrpRequesterV0 {
       return lastTokenId;
   }
 }
+
