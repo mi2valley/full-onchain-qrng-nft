@@ -126,7 +126,7 @@ contract QRNG is ERC721URIStorage, Ownable, RrpRequesterV0 {
     uint256 newItemId = _tokenIds.current();
 
 	  // 3つの単語を連携して格納する変数 combinedWord を定義します。
-    string memory combinedWord = string(abi.encodePacked(_pickRandomThirdWord(randomNumber), _pickRandomSecondWord(randomNumber), _pickRandomThirdWord(randomNumber)));
+    string memory combinedWord = string(abi.encodePacked(_pickRandomFirstWord(randomNumber), _pickRandomSecondWord(randomNumber), _pickRandomThirdWord(randomNumber)));
     string memory title = string(abi.encodePacked("HaiQ#", Strings.toString(newItemId)));
 
     // 3つの単語を連結して、<text>タグと<svg>タグで閉じます。
