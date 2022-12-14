@@ -92,7 +92,7 @@ contract QRNG is ERC721URIStorage, Ownable, RrpRequesterV0 {
           address(this),
           sponsorWallet,
           address(this),
-          this.makeAnHaiQNFT.selector,
+          this.fulfillUint256.selector,
           ""
       );
       expectingRequestIdToBeFulfilled[requestId] = true;

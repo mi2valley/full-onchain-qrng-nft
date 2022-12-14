@@ -28,6 +28,10 @@ async function main() {
   const randomNumber = parsedLog.args.response;
   console.log(`Fulfillment is confirmed, random number is ${randomNumber.toString()}`);
 
+  let txn = await qrng.makeAnHaiQNFT(requestId);
+  // Minting が仮想マイナーにより、承認されるのを待ちます。
+  await txn.wait();
+
   console.log("Minted NFT");
 
   // Wait for the fulfillment transaction to be confirmed and read the logs to get the random number
